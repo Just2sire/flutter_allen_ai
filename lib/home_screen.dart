@@ -1,6 +1,9 @@
 import 'package:allen_ai/colors.dart';
+import 'package:allen_ai/services/gemini_ai_service.dart';
+import 'package:allen_ai/services/open_ai_service.dart';
 import 'package:allen_ai/widgets/feature_box.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -13,14 +16,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final speechToText = SpeechToText();
-  String lastWords = "";
+  String lastWords = "Good Morning, what task can i do for you";
+  final OpenAIService openAIService = OpenAIService();
+  final GeminiAIService geminiAIService = GeminiAIService();
+  final FlutterTts flutterTts = FlutterTts();
+
   @override
   void initState() {
     super.initState();
+    initSpeechToText();
     initTextToSpeech();
   }
 
   Future<void> initTextToSpeech() async {
+    await flutterTts.setSharedInstance(true);
+    setState(() {});
+  }
+
+  Future<void> initSpeechToText() async {
     await speechToText.initialize();
     setState(() {});
   }
@@ -39,12 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       lastWords = result.recognizedWords;
     });
+    debugPrint("Words: ${result.recognizedWords}");
+  }
+
+  Future<void> systemSpeak(String content) async {
+    await flutterTts.speak(content);
   }
 
   @override
   void dispose() {
     super.dispose();
     speechToText.stop();
+    flutterTts.stop();
   }
 
   @override
@@ -116,13 +135,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(20).copyWith(
                     topLeft: Radius.zero,
                   )),
-              child: const Padding(
-                padding: EdgeInsets.symmetric(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
                   vertical: 10,
                 ),
                 child: Text(
-                  "Good Morning, what task can i do for you",
-                  style: TextStyle(
+                  lastWords,
+                  style: const TextStyle(
                     color: Pallete.mainFontColor,
                     fontSize: 24,
                     fontFamily: "Cera Pro",
@@ -170,6 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   descText:
                       "Get the best of both worlds with a voice assistant powered by Dall-E and ChatGPT",
                 ),
+                // GeminiResponseTypeView(builder: builder)
               ],
             ),
           ],
@@ -181,13 +201,19 @@ class _HomeScreenState extends State<HomeScreen> {
           if (await speechToText.hasPermission && speechToText.isNotListening) {
             startListening();
           } else if (speechToText.isListening) {
+            final openAISpeech = await openAIService.isArtPromptAPI(lastWords);
+            debugPrint("Open AI: $openAISpeech");
+            final bardSpeech = await geminiAIService.generateText(lastWords);
+            debugPrint("Bard: $bardSpeech");
+            await systemSpeak(openAISpeech);
             await stopListening();
+            debugPrint("Listening stoped Finished");
           } else {
             initTextToSpeech();
           }
         },
-        child: const Icon(
-          Icons.mic,
+        child: Icon(
+          speechToText.isListening ? Icons.stop : Icons.mic,
         ),
       ),
     );

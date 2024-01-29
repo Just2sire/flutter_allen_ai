@@ -1,8 +1,13 @@
 import 'package:allen_ai/colors.dart';
 import 'package:allen_ai/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
+  String apiKey = dotenv.env['GEMINIAPIKEY'] ?? "";
+  Gemini.init(apiKey: apiKey);
   runApp(const MyApp());
 }
 
@@ -18,11 +23,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(
         useMaterial3: true,
       ).copyWith(
-        scaffoldBackgroundColor: Pallete.whiteColor,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Pallete.whiteColor
-        )
-      ),
+          scaffoldBackgroundColor: Pallete.whiteColor,
+          appBarTheme: const AppBarTheme(backgroundColor: Pallete.whiteColor)),
       home: const HomeScreen(),
     );
   }
