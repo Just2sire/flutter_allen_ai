@@ -1,16 +1,21 @@
-# allen_ai
+# Flutter Allen AI 🤖
 
-A new Flutter project.
+Un projet Flutter dédié à un assistant IA.
 
-## Getting Started
+## 🚀 Getting Started
 
-This project is a starting point for a Flutter application.
+J'ai coniguré CHATGPT et BARD mais
 
-A few resources to get you started if this is your first Flutter project:
+Pour l'instant, seul **BARD** est opérationnel.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Si vous possédez la clé API de [BARD](https://makersuite.google.com/app/apikey), suivez simplement les étapes ci-dessous.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clonez le projet avec la commande : `git clone https://github.com/Just2sire/flutter_allen_ai.git`
+
+2. Installez les dépendances avec : `flutter pub get`
+
+3. Créez votre fichier `.env` en utilisant la commande suivante : `cp .env.example .env`
+
+4. Dans le fichier `.env` nouvellement créé à la racine du projet, remplacez le contenu de `GEMINIAPIKEY` qui est actuellement "YOUR BARD API KEY" par votre propre clé API.
+
+Et voilà, le tour est joué ! 🎉 N'hésitez pas à me contacter pour plus d'informations et de détails sur [WhatsApp](https://wa.me/qr/NHR3FLMHPOPIN1).
