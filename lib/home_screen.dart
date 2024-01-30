@@ -2,6 +2,7 @@ import 'package:allen_ai/colors.dart';
 import 'package:allen_ai/services/gemini_ai_service.dart';
 import 'package:allen_ai/services/open_ai_service.dart';
 import 'package:allen_ai/widgets/feature_box.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -20,6 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final OpenAIService openAIService = OpenAIService();
   final GeminiAIService geminiAIService = GeminiAIService();
   final FlutterTts flutterTts = FlutterTts();
+  String generateContent = "";
+  String generateImageUrl = "";
+  bool isTalking = false;
 
   @override
   void initState() {
@@ -59,6 +63,10 @@ class _HomeScreenState extends State<HomeScreen> {
     await flutterTts.speak(content);
   }
 
+  Future<void> stopSpeech() async {
+    await flutterTts.stop();
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -77,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Icons.menu,
           ),
         ),
-        title: const Text("Allen"),
+        title: BounceInDown(child: const Text("Allen")),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -128,94 +136,181 @@ class _HomeScreenState extends State<HomeScreen> {
                 top: 30,
               ),
               decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Pallete.borderColor,
-                    width: 2,
-                  ),
-                  borderRadius: BorderRadius.circular(20).copyWith(
-                    topLeft: Radius.zero,
-                  )),
+                border: Border.all(
+                  color: Pallete.borderColor,
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(20).copyWith(
+                  topLeft: Radius.zero,
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 10,
                 ),
                 child: Text(
                   lastWords,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Pallete.mainFontColor,
-                    fontSize: 24,
+                    fontSize: generateContent.isEmpty ? 24 : 18,
                     fontFamily: "Cera Pro",
                   ),
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(
-                10,
+            generateContent.isNotEmpty
+                ? Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 40,
+                    ).copyWith(
+                      top: 30,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Pallete.borderColor,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(20).copyWith(
+                        topRight: Radius.zero,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        generateContent,
+                        style: const TextStyle(
+                          color: Pallete.mainFontColor,
+                          fontSize: 24,
+                          fontFamily: "Cera Pro",
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
+            if (generateImageUrl.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(
+                    generateImageUrl,
+                  ),
+                ),
               ),
-              margin: const EdgeInsets.only(
-                top: 10,
-                left: 22,
-              ),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                "Here are few features",
-                style: TextStyle(
-                  fontFamily: "Cera Pro",
-                  fontSize: 20,
-                  color: Pallete.mainFontColor,
-                  fontWeight: FontWeight.bold,
+            Visibility(
+              visible: generateContent.isEmpty && generateImageUrl.isEmpty,
+              child: Container(
+                padding: const EdgeInsets.all(
+                  10,
+                ),
+                margin: const EdgeInsets.only(
+                  top: 10,
+                  left: 22,
+                ),
+                alignment: Alignment.centerLeft,
+                child: const Text(
+                  "Here are few features",
+                  style: TextStyle(
+                    fontFamily: "Cera Pro",
+                    fontSize: 20,
+                    color: Pallete.mainFontColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
             // Features List
-            const Column(
-              children: [
-                FeatureBox(
-                  color: Pallete.firstSuggestionBoxColor,
-                  headerText: "Chat GPT",
-                  descText:
-                      "A smarter way to stay organised and informed with ChatGPT",
-                ),
-                FeatureBox(
-                  color: Pallete.secondSuggestionBoxColor,
-                  headerText: "Dall-E",
-                  descText:
-                      "Get inspired and stay creative with your personal assistant powered by Dall-E",
-                ),
-                FeatureBox(
-                  color: Pallete.secondSuggestionBoxColor,
-                  headerText: "Smart Voice Assistant",
-                  descText:
-                      "Get the best of both worlds with a voice assistant powered by Dall-E and ChatGPT",
-                ),
-                // GeminiResponseTypeView(builder: builder)
-              ],
+            Visibility(
+              visible: generateContent.isEmpty && generateImageUrl.isEmpty,
+              child: const Column(
+                children: [
+                  FeatureBox(
+                    color: Pallete.firstSuggestionBoxColor,
+                    headerText: "Chat GPT",
+                    descText:
+                        "A smarter way to stay organised and informed with ChatGPT",
+                  ),
+                  FeatureBox(
+                    color: Pallete.secondSuggestionBoxColor,
+                    headerText: "Dall-E",
+                    descText:
+                        "Get inspired and stay creative with your personal assistant powered by Dall-E",
+                  ),
+                  FeatureBox(
+                    color: Pallete.secondSuggestionBoxColor,
+                    headerText: "Smart Voice Assistant",
+                    descText:
+                        "Get the best of both worlds with a voice assistant powered by Dall-E and ChatGPT",
+                  ),
+                  // GeminiResponseTypeView(builder: builder)
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Pallete.firstSuggestionBoxColor,
-        onPressed: () async {
-          if (await speechToText.hasPermission && speechToText.isNotListening) {
-            startListening();
-          } else if (speechToText.isListening) {
-            final openAISpeech = await openAIService.isArtPromptAPI(lastWords);
-            debugPrint("Open AI: $openAISpeech");
-            final bardSpeech = await geminiAIService.generateText(lastWords);
-            debugPrint("Bard: $bardSpeech");
-            await systemSpeak(openAISpeech);
-            await stopListening();
-            debugPrint("Listening stoped Finished");
-          } else {
-            initTextToSpeech();
-          }
-        },
-        child: Icon(
-          speechToText.isListening ? Icons.stop : Icons.mic,
-        ),
-      ),
+      floatingActionButton: isTalking
+          ? FloatingActionButton.small(
+              backgroundColor: Pallete.firstSuggestionBoxColor,
+              onPressed: () async {
+                stopSpeech();
+                isTalking = false;
+                setState(() {});
+              },
+              child: const Icon(
+                Icons.stop,
+              ),
+            )
+          : FloatingActionButton(
+              backgroundColor: Pallete.firstSuggestionBoxColor,
+              onPressed: () async {
+                if (await speechToText.hasPermission &&
+                    speechToText.isNotListening) {
+                  startListening();
+                } else if (speechToText.isListening) {
+                  // Work with OPEN AI API
+                  final openAISpeech =
+                      await openAIService.isArtPromptAPI(lastWords);
+                  debugPrint("Open AI: $openAISpeech");
+
+                  if (openAISpeech.contains("https")) {
+                    generateImageUrl = openAISpeech;
+                    generateContent = "";
+                    setState(() {});
+                  } else {
+                    generateContent = openAISpeech;
+                    generateImageUrl = "";
+                    setState(() {});
+                  }
+
+                  // Work with Bard API
+                  final bardSpeech =
+                      await geminiAIService.generateText(lastWords);
+                  generateContent = bardSpeech;
+                  debugPrint("Bard: $bardSpeech");
+
+                  // speech system
+                  await systemSpeak(bardSpeech);
+
+                  isTalking = true;
+
+                  setState(() {});
+                  await stopListening();
+                  // debugPrint("Listening stoped Finished");
+                } else {
+                  initTextToSpeech();
+                }
+              },
+              child: Icon(
+                speechToText.isListening ? Icons.stop : Icons.mic,
+              ),
+            ),
     );
   }
 }

@@ -11,9 +11,9 @@ class GeminiAIService implements ApiRepository {
   @override
   Future<String> generateText(String prompt) async {
     try {
-      final resp = await gemini.text(prompt);
-      var candidates = resp?.output;
-      print(candidates);
+      // final resp = await gemini.text(prompt);
+      // var candidates = resp?.output;
+      // print(candidates);
       final res = await http.post(
         Uri.parse(
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey",
@@ -36,7 +36,8 @@ class GeminiAIService implements ApiRepository {
         ),
       );
       print(res);
-      return candidates ?? "";
+      // return candidates ?? "Une erreur de l'intelligence artificielle Bart";
+      return "Une erreur de l'intelligence artificielle Bart";
       // return "";
     } catch (e) {
       return e.toString();

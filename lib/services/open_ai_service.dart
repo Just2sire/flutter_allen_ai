@@ -43,7 +43,7 @@ class OpenAIService implements ApiRepository {
           return res;
         }
       }
-      return "An internal error occured";
+      return "Une erreure s'est produite...";
     } catch (e) {
       return e.toString();
     }
@@ -113,8 +113,7 @@ class OpenAIService implements ApiRepository {
         ),
       );
       if (res.statusCode == 200) {
-        String imagrUrl =
-            jsonDecode(res.body)["data"][0]["uri"];
+        String imagrUrl = jsonDecode(res.body)["data"][0]["uri"];
         // imagrUrl = content.trim();
         messages.add({
           'role': "assistant",
@@ -122,7 +121,7 @@ class OpenAIService implements ApiRepository {
         });
         return imagrUrl;
       }
-      return "An internal error occured";
+      return "Une erreure s'est produite; Une erreur de l'intelligence artificielle de OpenAI";
     } catch (e) {
       return e.toString();
     }
