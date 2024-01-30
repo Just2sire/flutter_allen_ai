@@ -299,19 +299,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     startListening();
                   } else if (speechToText.isListening) {
                     // Work with OPEN AI API
-                    final openAISpeech =
-                        await openAIService.isArtPromptAPI(lastWords);
-                    debugPrint("Open AI: $openAISpeech");
+                    // final openAISpeech =
+                    //     await openAIService.isArtPromptAPI(lastWords);
+                    // debugPrint("Open AI: $openAISpeech");
             
-                    if (openAISpeech.contains("https")) {
-                      generateImageUrl = openAISpeech;
-                      generateContent = "";
-                      setState(() {});
-                    } else {
-                      generateContent = openAISpeech;
-                      generateImageUrl = "";
-                      setState(() {});
-                    }
+                    // if (openAISpeech.contains("https")) {
+                    //   generateImageUrl = openAISpeech;
+                    //   generateContent = "";
+                    //   setState(() {});
+                    // } else {
+                    //   generateContent = openAISpeech;
+                    //   generateImageUrl = "";
+                    //   setState(() {});
+                    // }
             
                     // Work with Bard API
                     final bardSpeech =
